@@ -3,6 +3,8 @@ package com.builtlab.identity_service.service;
 import com.builtlab.identity_service.dto.request.UserCreationRequest;
 import com.builtlab.identity_service.dto.request.UserUpdateRequest;
 import com.builtlab.identity_service.entity.User;
+import com.builtlab.identity_service.exception.AppException;
+import com.builtlab.identity_service.exception.ErrorCode;
 import com.builtlab.identity_service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -17,7 +19,7 @@ public class UserService {
 
     public User createUser(UserCreationRequest request) {
         if(userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("User Existed");
+            throw new RuntimeException("ErrorCode.USER_EXITED");
         }
 
         User user = new User();
@@ -35,7 +37,7 @@ public class UserService {
     }
     public User getUser(String id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_EXITED));
     }
 
     public User updateUser(String userId, UserUpdateRequest request) {
