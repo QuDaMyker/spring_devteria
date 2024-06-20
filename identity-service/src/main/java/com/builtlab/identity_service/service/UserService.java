@@ -5,6 +5,7 @@ import com.builtlab.identity_service.dto.request.UserUpdateRequest;
 import com.builtlab.identity_service.entity.User;
 import com.builtlab.identity_service.exception.AppException;
 import com.builtlab.identity_service.exception.ErrorCode;
+import com.builtlab.identity_service.mapper.UserMapper;
 import com.builtlab.identity_service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -16,19 +17,15 @@ import java.util.List;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserMapper userMapper;
 
     public User createUser(UserCreationRequest request) {
         if(userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("ErrorCode.USER_EXITED");
+            throw new RuntimeException("USER_EXITED");
         }
 
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
-
+        User user = userMapper.toUser(request);
         return userRepository.save(user);
     }
 
