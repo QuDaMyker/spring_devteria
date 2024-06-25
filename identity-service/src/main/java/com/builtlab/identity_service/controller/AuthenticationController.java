@@ -3,6 +3,7 @@ package com.builtlab.identity_service.controller;
 import com.builtlab.identity_service.dto.request.ApiResponse;
 import com.builtlab.identity_service.dto.request.AuthenticationRequest;
 import com.builtlab.identity_service.dto.response.AuthenticationResponse;
+import com.builtlab.identity_service.dto.response.IntrospectResponse;
 import com.builtlab.identity_service.service.AuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,11 @@ public class AuthenticationController {
 
     @PostMapping("/log-in")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
-        boolean result = authenticationService.authenticate(request);
+        var result = authenticationService.authenticate(request);
         return  ApiResponse.<AuthenticationResponse>builder()
-                .result(AuthenticationResponse.builder()
-                        .authenticated(result)
-                        .build()).build();
+                .result(result).build();
     }
+
+    @PostMapping("/introspect")
+    ApiResponse<IntrospectResponse>
 }

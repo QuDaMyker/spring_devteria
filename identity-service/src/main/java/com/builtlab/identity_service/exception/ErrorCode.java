@@ -7,7 +7,7 @@ public enum ErrorCode {
     USERNAME_INVALID(1003, "Username invalid"),
     PASSWORD_INVALID(1004, "Password invalid"),
     USER_NOT_EXIST(1005, "User not existed"),
-
+    UNAUTHENTICATED(1006, "Unauthenticated"),
     ;
 
     ErrorCode(int code, String message) {

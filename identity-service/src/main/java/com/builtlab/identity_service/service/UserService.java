@@ -54,10 +54,14 @@ public class UserService {
         return apiResponse;
     }
 
-    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+    public ApiResponse<UserResponse> updateUser(String userId, UserUpdateRequest request) {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(200);
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_EXITED));
         userMapper.updateUser(user, request);
-        return userMapper.toUserResponse(userRepository.save(user));
+        apiResponse.setResult(userMapper.toUserResponse(userRepository.save(user)));
+        return apiResponse;
+
     }
 
     public void deleteUser(String userId) {
