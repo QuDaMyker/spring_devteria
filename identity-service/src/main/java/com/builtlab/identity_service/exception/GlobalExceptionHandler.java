@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.text.ParseException;
 import java.util.Objects;
 
 import static com.builtlab.identity_service.exception.ErrorCode.UNCATEGORIZED_EXCEPTION;
@@ -52,6 +53,16 @@ public class GlobalExceptionHandler {
         }catch (IllegalArgumentException ex) {
 
         }
+        apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(errorCode.getMessage());
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    @ExceptionHandler(value = ParseException.class)
+    ResponseEntity<ApiResponse> handlingParseException(ParseException exception) {
+        ApiResponse apiResponse = new ApiResponse();
+
+        ErrorCode errorCode = ErrorCode.INVALID_TOKEN;
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
