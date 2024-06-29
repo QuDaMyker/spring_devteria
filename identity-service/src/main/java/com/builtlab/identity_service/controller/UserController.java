@@ -6,6 +6,8 @@ import com.builtlab.identity_service.dto.request.UserUpdateRequest;
 import com.builtlab.identity_service.dto.response.UserResponse;
 import com.builtlab.identity_service.entity.User;
 import com.builtlab.identity_service.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +22,11 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "User Controller")
 public class UserController {
     UserService userService;
 
+    @Operation(summary = "Create User", description = "Add new user with information")
     @PostMapping
     ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request) {
         ApiResponse<User> apiResponse = new ApiResponse<>();

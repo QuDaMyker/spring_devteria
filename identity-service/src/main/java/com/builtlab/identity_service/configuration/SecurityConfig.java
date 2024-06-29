@@ -18,7 +18,13 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS = {"/auth/token", "/auth/token", "/auth/introspect"};
+    private final String[] PUBLIC_ENDPOINTS = {
+            "/auth/token",
+            "/auth/introspect",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            //"/swagger-ui.html",
+    };
     @Value("${jwt.signerKey}")
     protected String signerKey;
 
@@ -27,6 +33,7 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(registry ->
                 registry.requestMatchers(
                                 HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
         );
 

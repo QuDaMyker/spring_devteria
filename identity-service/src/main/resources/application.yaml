@@ -11,7 +11,13 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
 jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+open:
+  api:
+    title: API Document
+    version: v1.0.0
+    description: API Spring Boot
+    serverUrl: http://localhost:8080
+    serverName: Identity Service
 
