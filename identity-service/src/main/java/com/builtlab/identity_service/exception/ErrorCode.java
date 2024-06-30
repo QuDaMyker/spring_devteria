@@ -9,6 +9,7 @@ public enum ErrorCode {
     USER_NOT_EXIST(1005, "User not existed"),
     UNAUTHENTICATED(1006, "Unauthenticated"),
     INVALID_TOKEN(1007, "Invalid Token"),
+    ACCESS_DENIED(1008, "Access Denied"),
     ;
 
     ErrorCode(int code, String message) {

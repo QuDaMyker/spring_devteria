@@ -42,8 +42,8 @@ public class UserController {
     ApiResponse<List<UserResponse>> getAllUsers() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        log.info("Username: {}", authentication.getName());
-        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
+//        log.info("Username: {}", authentication.getName());
+//        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 
         return ApiResponse.<List<UserResponse>>builder()
                 .result(userService.getUsers())
@@ -51,13 +51,27 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    ApiResponse getUser(@PathVariable("userId") String userId) {
-        return userService.getUser(userId);
+    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userService.getUser(userId))
+                .build();
+    }
+
+    @GetMapping("/myInfo")
+    ApiResponse<UserResponse> getMyInfo() {
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userService.getMyInfo())
+                .build();
     }
 
     @PutMapping("{userId}")
-    ApiResponse updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request) {
-        return  userService.updateUser(userId, request);
+    ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request) {
+        return  ApiResponse.<UserResponse>builder()
+                .code(200)
+                .result(userService.updateUser(userId, request))
+                .build();
     }
 
     @DeleteMapping("{userId}")

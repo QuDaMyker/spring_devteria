@@ -2,9 +2,11 @@ package com.builtlab.identity_service.exception;
 
 import com.builtlab.identity_service.dto.request.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 import java.text.ParseException;
 import java.util.Objects;
@@ -63,6 +65,16 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse = new ApiResponse();
 
         ErrorCode errorCode = ErrorCode.INVALID_TOKEN;
+        apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(errorCode.getMessage());
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    @ExceptionHandler(value = AuthorizationDeniedException.class)
+    ResponseEntity<ApiResponse> handlingAuthorizationDeniedException(AuthorizationDeniedException exception) {
+        ApiResponse apiResponse = new ApiResponse();
+
+        ErrorCode errorCode = ErrorCode.ACCESS_DENIED;
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);

@@ -14,8 +14,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
@@ -48,28 +53,40 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
-        List<UserResponse> list = new ArrayList<>();
-        userRepository.findAll().forEach(e -> list.add(userMapper.toUserResponse(e)));
-        return list;
+        log.info("In method get User");
+//        List<UserResponse> list = new ArrayList<>();
+//        userRepository.findAll().forEach(e -> list.add(userMapper.toUserResponse(e)));
+//        return list;
+        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
-    public ApiResponse getUser(String id) {
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(1000);
-        apiResponse.setResult(userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_EXITED)));
-        return apiResponse;
+    @PostAuthorize("returnObject.username == authentication.name || hasRole('ADMIN')")
+    public UserResponse getUser(String id) {
+//        ApiResponse apiResponse = new ApiResponse();
+//        apiResponse.setCode(1000);
+//        apiResponse.setResult(userRepository.findById(id)
+//                .orElseThrow(() -> new AppException(ErrorCode.USER_EXITED)));
+//        return apiResponse;
+        return userMapper.toUserResponse(userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST)));
     }
 
-    public ApiResponse<UserResponse> updateUser(String userId, UserUpdateRequest request) {
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(200);
+    public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_EXITED));
         userMapper.updateUser(user, request);
-        apiResponse.setResult(userMapper.toUserResponse(userRepository.save(user)));
-        return apiResponse;
+        return userMapper.toUserResponse(userRepository.save(user));
 
+    }
+
+    public UserResponse getMyInfo() {
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(name).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXIST));
+
+        return userMapper.toUserResponse(user);
     }
 
     public void deleteUser(String userId) {
