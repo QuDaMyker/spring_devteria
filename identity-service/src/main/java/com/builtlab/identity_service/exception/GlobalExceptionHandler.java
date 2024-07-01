@@ -2,6 +2,7 @@ package com.builtlab.identity_service.exception;
 
 import com.builtlab.identity_service.dto.request.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -22,10 +23,10 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse = new ApiResponse<>();
         String enumKey = exception.getMessage();
         ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
-        try{
+        try {
             errorCode = ErrorCode.valueOf(enumKey);
 
-        }catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
 
         }
         apiResponse.setCode(errorCode.getCode());
@@ -41,7 +42,9 @@ public class GlobalExceptionHandler {
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
 
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity
+                .status(errorCode.getStatusCode())
+                .body(apiResponse);
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -49,10 +52,10 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse = new ApiResponse();
         String enumKey = exception.getFieldError().getDefaultMessage();
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
-        try{
+        try {
             errorCode = ErrorCode.valueOf(enumKey);
 
-        }catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
 
         }
         apiResponse.setCode(errorCode.getCode());
@@ -74,9 +77,23 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiResponse> handlingAuthorizationDeniedException(AuthorizationDeniedException exception) {
         ApiResponse apiResponse = new ApiResponse();
 
-        ErrorCode errorCode = ErrorCode.ACCESS_DENIED;
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity
+                .status(errorCode.getStatusCode())
+                .body(apiResponse);
+    }
+    @ExceptionHandler(value = AccessDeniedException.class)
+    ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception) {
+
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
+        return ResponseEntity
+                .status(errorCode.getStatusCode())
+                .body(ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
     }
 }
