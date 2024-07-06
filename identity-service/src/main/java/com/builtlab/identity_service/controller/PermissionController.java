@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/permissions")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "User Controller")
+@Tag(name = "Permission Controller")
 @Slf4j
 public class PermissionController {
     PermissionService permissionService;
