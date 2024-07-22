@@ -29,9 +29,13 @@ public class SecurityConfig {
             "/users",
             "/auth/token",
             "/auth/introspect",
+//            "/v3/api-docs/**",
+//            "/swagger-ui/**",
+            //"/swagger-ui.html",
+    };
+    private final String[] PUBLIC_OPENAPI ={
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            //"/swagger-ui.html",
     };
     @Value("${jwt.signerKey}")
     protected String signerKey;
@@ -41,6 +45,8 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(registry ->
                 registry.requestMatchers(
                                 HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.POST, PUBLIC_OPENAPI).permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_OPENAPI).permitAll()
                        // .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated()
         );
