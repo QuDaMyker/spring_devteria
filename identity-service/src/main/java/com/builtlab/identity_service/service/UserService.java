@@ -9,6 +9,7 @@ import com.builtlab.identity_service.enums.Role;
 import com.builtlab.identity_service.exception.AppException;
 import com.builtlab.identity_service.exception.ErrorCode;
 import com.builtlab.identity_service.mapper.UserMapper;
+import com.builtlab.identity_service.repository.RoleRepository;
 import com.builtlab.identity_service.repository.UserRepository;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
@@ -38,6 +39,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    RoleRepository roleRepository;
 
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -53,7 +55,8 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('UPDATE_DATA')")
     public List<UserResponse> getUsers() {
         log.info("In method get User");
 //        List<UserResponse> list = new ArrayList<>();
@@ -74,8 +77,12 @@ public class UserService {
     }
 
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_EXITED));
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
         userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
         return userMapper.toUserResponse(userRepository.save(user));
 
     }
