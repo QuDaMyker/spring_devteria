@@ -1,5 +1,6 @@
 package com.builtlab.identity_service.dto.request;
 
+import com.builtlab.identity_service.validator.DobConstraint;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,6 +16,7 @@ public class UserUpdateRequest {
     String password;
     String firstName;
     String lastName;
+    @DobConstraint(min = 18, message = "INVALID_DOB")
     LocalDate dob;
     List<String> roles;
 

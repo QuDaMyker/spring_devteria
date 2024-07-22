@@ -16,6 +16,7 @@ public enum ErrorCode {
     UNAUTHORIZED(1006, "You do not have permission to access", HttpStatus.FORBIDDEN),
     INVALID_TOKEN(1007, "Invalid Token", HttpStatus.FORBIDDEN),
     ACCESS_DENIED(1008, "Access Denied", HttpStatus.FORBIDDEN),
+    INVALID_DOB(1009, "Invalid date of birth", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
